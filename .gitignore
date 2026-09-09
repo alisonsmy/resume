@@ -2,3 +2,7 @@
 node_modules/
 tmp/
 output/
+dist/
+public/pdfjs/
+*.tsbuildinfo
+public/licenses/

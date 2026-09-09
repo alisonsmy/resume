@@ -1,0 +1,43 @@
+{
+  "name": "resume",
+  "version": "1.0.0",
+  "description": "React and TypeScript resume website with editable content, photo cropping, and A4 PDF preview.",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alisonsmy/resume.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/alisonsmy/resume/issues"
+  },
+  "homepage": "https://github.com/alisonsmy/resume#readme",
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "pdfjs-dist": "^6.3.289",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "prettier": "^3.9.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

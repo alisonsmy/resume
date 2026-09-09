@@ -1,233 +1,226 @@
-# Alison Shu — Resume website
+# Alison Shu — React and TypeScript resume
 
-A blue, mobile-friendly resume website with a photo editor, an experience editor, and an **A4 PDF preview and download**.
+A blue, mobile-friendly resume website built with **React, TypeScript, and Vite**. Edit your work experience, replace and crop your photo, and preview or download an **A4 PDF**.
 
-Built with **HTML, CSS, and JavaScript**. GitHub Pages can host it directly. There is no build step, database, account system, or API key to set up.
-
-## What you can do
-
-- Edit jobs, add description points, and change the job order.
-- Replace your photo and adjust its square crop.
-- Preview the actual PDF, turn pages, and zoom in before downloading.
-- Download a portrait **A4 PDF: 210 × 297 mm** on every page.
-- Download one `resume.js` file containing your saved experience and photo to publish on GitHub.
+The website runs entirely in the browser. It needs no database, API key, or backend. GitHub Actions builds it and publishes the finished website to GitHub Pages.
 
 ## Run it on your computer — step by step
 
-### 1. Get the project folder
+### 1. Install Node.js
 
-If you already have the files, use that folder. Otherwise, on the GitHub repository page, select **Code → Download ZIP**, then unzip it.
-
-Open the folder and check that it contains `index.html`, `app.js`, `resume.js`, and the `assets` folder. Keep the files together.
-
-### 2. Check that Python 3 is installed
-
-Open **Terminal** on macOS/Linux, or **PowerShell** on Windows.
-
-On macOS/Linux, enter:
+Install **Node.js 24 LTS or newer** from [nodejs.org](https://nodejs.org/en/download). npm is included. Then open Terminal on macOS/Linux or PowerShell on Windows and check:
 
 ```sh
-python3 --version
+node --version
+npm --version
 ```
 
-On Windows, enter:
+Node should report `v24` or newer. If either command is missing, reopen the terminal after installation.
 
-```powershell
-py --version
+### 2. Get the project
+
+If you already have the project, use that folder. Otherwise, select **Code → Download ZIP** on GitHub and unzip it, or clone the repository:
+
+```sh
+git clone https://github.com/alisonsmy/resume.git
+cd resume
 ```
 
-You should see a version starting with `Python 3`. If the command is missing, install Python 3 from [python.org](https://www.python.org/downloads/), reopen Terminal or PowerShell, and try again. If Windows has `python` instead of `py`, use `python` in the commands below.
-
-Python is only needed to preview the files on your computer. GitHub Pages does not need Python, Node.js, or an install command.
-
-### 3. Open the project folder in Terminal
-
-For the current project on this Mac, enter:
+For the existing project on this Mac:
 
 ```sh
 cd "/Users/mshu/Projects/Personal/resume"
 ```
 
-If you saved it somewhere else, use that folder’s full path instead:
-
-```sh
-cd "/full/path/to/resume"
-```
-
-On Windows, for example:
+On Windows, an example is:
 
 ```powershell
 cd "C:\Users\YourName\Downloads\resume"
 ```
 
-Replace example paths with your own. The folder should be the one that directly contains `index.html`.
+Use your own path. This folder must directly contain `package.json` and `index.html`.
 
-### 4. Start the local website
-
-On macOS/Linux:
+### 3. Install the dependencies
 
 ```sh
-python3 -m http.server 4173 --bind 127.0.0.1
+npm ci
 ```
 
-On Windows:
+This installs the versions recorded in `package-lock.json`. Run it the first time and after pulling changes to that lockfile. Keep `package-lock.json` in GitHub so local and hosted builds use the same versions.
 
-```powershell
-py -m http.server 4173 --bind 127.0.0.1
+### 4. Start the website
+
+```sh
+npm run dev
 ```
 
-Leave this window open while using the website. A message about serving on port 4173 means it is running. This server is available only on your own computer.
+Keep the terminal open. Open **[http://127.0.0.1:4173/](http://127.0.0.1:4173/)** in your browser.
 
-### 5. Open the website
+You should see the resume, **Preview PDF**, **Replace photo**, and **Edit experience**. Changes to source files update the development preview automatically.
 
-Open your browser and go to:
+Do not double-click `index.html` or use the old Python server for the source folder. Vite compiles the React and TypeScript source for your browser.
 
-**[http://127.0.0.1:4173/](http://127.0.0.1:4173/)**
+### 5. Stop and restart
 
-You should see Alison’s resume and the **Preview PDF**, **Replace photo**, and **Edit experience** controls.
+Press **Ctrl+C** in the running terminal to stop the server. To restart it, open the project folder and run `npm run dev` again.
 
-Do not double-click `index.html`: the website uses JavaScript modules, which need a local server or GitHub Pages.
+### 6. Check the production build
 
-### 6. Stop or restart it
+Stop the development server first, then run:
 
-In the Terminal window running the server, press **Ctrl+C** to stop it.
+```sh
+npm test
+npm run build
+npm run preview
+```
 
-To start it again, repeat steps 3–5. After changing a project file, refresh the browser to see the update; you normally do not need to restart the server.
+Open the same local URL. This time you are viewing the built website in `dist/`, just as it will be served on GitHub Pages. Rebuild after changing source files if you are using this preview.
+
+| Command | Purpose |
+| --- | --- |
+| `npm ci` | Install the locked dependency versions |
+| `npm run dev` | Run the site with live updates |
+| `npm run typecheck` | Check strict TypeScript types |
+| `npm test` | Test saved-data compatibility and A4 PDF generation |
+| `npm run build` | Check types and create the website in `dist/` |
+| `npm run preview` | Serve the built website locally |
+
+## Edit your experience
+
+1. Select **Experience → Edit experience**.
+2. Choose a job or select **+ Add job**.
+3. Enter the company, job title, dates, and description. Write **one description point per line**.
+4. Optionally add a team, more details, and tools.
+5. Use **Move up** and **Move down** to reorder jobs. You can reverse **Remove job** with **Undo**.
+6. Select **Save changes**. The page and next PDF preview use the saved version.
+7. Select **Download website file** to download `resume.json`, which includes your saved jobs and photo.
+
+To publish the edits, replace **`src/data/resume.json`** in your GitHub repository with the downloaded file and commit the change. GitHub Actions will build and publish it.
+
+**Use published version → Save changes** restores the jobs from the source file and clears the local override. Closing the experience editor keeps unsaved text for the current visit. Reloading with an unsaved draft triggers the browser’s leave-page warning.
+
+## Replace and crop your photo
+
+1. Select **Replace photo → Choose a photo**.
+2. Choose a **JPG, PNG, or WebP** under **10 MB**, up to **40 megapixels**.
+3. Preview the square crop. With a rectangular picture, use the slider to move the crop up/down or left/right.
+4. Select **Save photo**. Your page and the next PDF use the new picture.
+5. Select **Download website file**, then replace **`src/data/resume.json`** on GitHub to publish it with your saved jobs.
+
+The crop is square with adjustable position; zoom cropping and other crop shapes are not included. Closing before saving keeps your current picture. **Use published photo → Save photo** restores the photo from the website files.
+
+Photos are processed on your device and resized to square JPEGs of up to 800 × 800 pixels. The downloaded JSON contains the image, so you do not need to upload a separate picture.
+
+The original picture is `public/assets/alison-shu.jpg`. To replace it directly, use a square JPEG, remove any `photo` property from `src/data/resume.json`, and clear the browser override using **Use published photo → Save photo**.
 
 ## Preview and download an A4 PDF
 
-1. Save any changes in **Edit experience** or **Replace photo** first. Unsaved editor drafts are not included.
+1. Save your job and photo edits first. Unsaved drafts are not included.
 2. Select **Preview PDF** at the top of the website.
-3. Use **Previous** and **Next** to review every page. Scroll inside the preview to see the rest of a page.
-4. Use **Zoom → Fit width** to fit the page to your screen, or choose **100%**, **125%**, or **150%** for a closer look. Zoom only changes the preview, not the PDF paper size.
-5. Use **Read page text** if you prefer a text version of the current page.
-6. Select **Download A4 PDF**. The file is named `Alison_Shu_Resume.pdf`. If a Save dialog appears, choose a folder and select **Save**. Depending on the browser, it may instead download immediately or open in a PDF viewer where you can save or share it.
+3. Use **Previous** and **Next** to check every page. Scroll inside the preview to read the whole page.
+4. Select **Fit width**, **100%**, **125%**, or **150%** under **Zoom**. Zoom changes the preview only.
+5. Open **Read page text** for an accessible text version of the current page.
+6. Select **Download A4 PDF**. If a Save dialog appears, choose a folder and select **Save**. Some mobile browsers open the PDF so you can save or share it.
 
-The preview is rendered from the **same PDF bytes** as the download. Every page is portrait A4 (210 × 297 mm), with selectable text, a photo, page numbers, and clickable contact links in the downloaded file. The current resume uses two pages; longer descriptions and more jobs create extra A4 pages automatically.
+The filename is `Alison_Shu_Resume.pdf`. Every page is **A4 portrait, 210 × 297 mm**, with selectable text, a photo, page numbers, and clickable contact links. The current resume fits on two pages; longer content creates extra A4 pages automatically.
 
-Close the preview, save your edits, then reopen it to generate an updated PDF. Generating and previewing the PDF happens on your device; your resume is not sent to an external service.
+The preview and download use the same generated PDF. Close the preview, save your changes, and reopen it for an updated version. PDF generation and preview happen on your device. The PDF libraries and fonts are served from the site, without external CDN requests.
 
-If the preview cannot load but the PDF was created, **Download A4 PDF** remains available. You can review the file in your device’s PDF viewer. **Try preview again** regenerates it.
+If preview rendering fails but the PDF is ready, the download button remains available. Use **Try preview again**, or open the downloaded file in your device’s PDF viewer. For paper printing, open the downloaded PDF and select **A4** in the print dialog. Printing the webpage itself uses a different layout.
 
-For a paper copy, open the downloaded PDF and choose **A4** in the print dialog. The website also has a browser print stylesheet, but printing the webpage gives a different layout from the downloadable PDF.
+## Where edits are saved
 
-## Edit your resume
+**Save changes** and **Save photo** save in your current browser, at the current website address. They do not change source files or the public website.
 
-### Change work experience
+- Refreshing normally keeps saved edits. Private browsing or clearing browser storage can remove them.
+- Other visitors see the published version until you commit the updated JSON file to GitHub.
+- Localhost, different ports, and the GitHub Pages address have separate browser saves.
+- Both editors’ **Download website file** buttons include your saved jobs and current saved photo.
+- Keep the downloaded filename exactly `resume.json` when replacing `src/data/resume.json`, even if the browser adds a number to it.
+- To update the local project, replace `src/data/resume.json` in that folder too.
 
-1. Go to **Experience → Edit experience**.
-2. Choose a job or select **+ Add job**.
-3. Fill in the company, job title, dates, and job description. Write **one description point per line**.
-4. Optionally add a team, more details, and tools.
-5. Use **Move up** or **Move down** to reorder jobs. **Remove job** can be reversed with **Undo**.
-6. Select **Save changes**. The page and next PDF preview use your saved content.
-7. To keep a file copy or publish it, select **Download website file**. It includes your saved experience and current saved photo.
+### Existing saves from the JavaScript version
 
-**Use published version** loads the jobs from the website’s `resume.js`. Select **Save changes** to apply them and clear your local experience override. **Undo** can restore the previous draft. Closing the experience editor keeps unsaved text for the current visit; refreshing with unsaved text triggers the browser’s leave-page warning.
+Browser saves from the previous website are kept when you use the same browser and URL: the React app reads the original storage keys. The default local address is still `http://127.0.0.1:4173/` for that reason.
 
-### Replace your photo
+New website-file downloads are **`resume.json`**, replacing the old `resume.js` format. The current source of resume content is **`src/data/resume.json`**. Keep old downloaded files as backups; an old `resume.js` cannot be used directly as a JSON file.
 
-1. Select **Replace photo** near your picture, then **Choose a photo**.
-2. Choose a JPG, PNG, or WebP under **10 MB**, up to **40 megapixels**.
-3. Preview the square crop. For a rectangular picture, move the slider to adjust the crop.
-4. Select **Save photo**. The page and next PDF preview use this picture.
-5. Select **Download website file** to keep or publish the photo together with your saved experience. There is no separate picture file to upload.
+## Change other content or design
 
-Closing without saving keeps your current photo. **Use published photo → Save photo** restores the photo from the website files.
+Edit **`src/data/resume.json`** in a text editor to update the name, summary, contact details, skills, education, internships, languages, and interests. Use valid JSON: double quotes, no comments, and no trailing commas.
 
-The editor processes photos on your device, resizing them to square JPEGs of up to 800 × 800 pixels. It stores the image in the `photo` field of the downloaded `resume.js`.
-
-The original photo is in `assets/alison-shu.jpg`, extracted from the supplied resume without retouching. If you prefer replacing that asset directly, use a square JPEG, remove any `photo` field from `resume.js`, and select **Use published photo → Save photo** to clear any browser override.
-
-### Understand where edits are saved
-
-**Save changes** and **Save photo** save only in your current browser, at the current website address. Refreshing normally keeps them, but private browsing or clearing browser storage can remove them.
-
-- Saving in the browser does **not** change the files on your computer or the public website.
-- Other visitors see the published version until you update the files on GitHub.
-- Localhost, different ports, and the GitHub Pages address have separate saved edits.
-- **Download website file** creates a backup containing both your saved jobs and photo. Keep its filename as `resume.js` when replacing the project file, even if your browser adds a number to the downloaded name.
-- To keep changes in the local project, replace its `resume.js` with the downloaded file. To publish them, replace that file on GitHub too.
-
-### Change other content or styling
-
-Edit `resume.js` in a text editor to change your name, summary, contact details, skills, education, internships, languages, and interests. Both the page and PDF use these values.
-
-| Content field | How it appears |
+| Field | Use |
 | --- | --- |
-| `bullets` | Main job description points on the page and in the PDF |
-| `details` | Under “More about this role” on the website; included in the PDF |
-| `stack` | Short list of tools below the job on the website |
-| `technologies` | Full tools note on the page and in the PDF |
-| `photo` | Optional embedded image created by the photo editor |
+| `experience[].bullets` | Main job descriptions, one string per point |
+| `experience[].details` | Expandable details on the website; included in the PDF |
+| `experience[].stack` | Short list of tools on the website |
+| `experience[].technologies` | Full tools note on the website and PDF |
+| `photo` | Optional image included by the photo editor |
 
-Keep quotes, commas, and brackets intact when editing `resume.js`. If you directly change jobs in this file while local edits exist, use **Use published version → Save changes** to show the file’s version.
+If old browser saves hide file changes, use **Use published version → Save changes** and/or **Use published photo → Save photo**.
 
-The wordmark, signature, and page description are in `index.html`. Colors, fonts, and spacing are in `styles.css`. The PDF layout is in `pdf.js`.
+The page layout, wordmark, and signature are in `src/App.tsx`. Colors and spacing are in `src/styles.css`. Page metadata is in `index.html`. The PDF layout is in `src/lib/pdf.ts`. Shared data types are in `src/types.ts`.
 
-Content was adapted from `AlisonShu_Resume2025.pdf` using simpler words. Dates are preserved, including **May 2023 — Present**; check them before publishing. The original PDF is not included in the website files.
+The resume was adapted from `AlisonShu_Resume2025.pdf` using simple words. Dates are preserved, including **May 2023 — Present**; check them before publishing. The source PDF is not included in the hosted site.
 
-## Publish on GitHub Pages — step by step
+## Publish with GitHub Pages — step by step
 
-1. Sign in to GitHub and create a repository, for example `resume`. A public repository works with GitHub Free.
-2. Upload the website files using **Add file → Upload files**, or use GitHub Desktop. Put `index.html` at the repository’s top level, not inside another `resume` folder.
-3. Include every JavaScript file, `styles.css`, `.nojekyll`, and the **entire `assets` folder**, including the PDF libraries and fonts. Keep the folder structure intact. `README.md` is useful documentation; `docs/design/` is optional. You do not need `output/`, `tmp/`, or the original resume PDF for hosting.
-4. Commit the uploaded files. If you used the website editors, replace `resume.js` with the latest downloaded website file before publishing.
-5. Open the repository’s **Settings → Pages**.
-6. Under **Build and deployment**, choose **Deploy from a branch**.
-7. Select the branch with your files, usually **main**, and **/ (root)**. Select **Save**.
-8. Wait for deployment to finish. GitHub shows the published website address on the Pages screen. Deployment progress also appears under **Actions**.
-9. Open the published address and check the page, photo, and **Preview PDF → Download A4 PDF** flow.
+1. Upload or push the project to GitHub, including **`src/`**, **`public/assets/`**, **`.github/workflows/deploy.yml`**, `index.html`, `package.json`, `package-lock.json`, `tsconfig.json`, and `vite.config.ts`. GitHub Desktop can help upload the full folder structure.
+2. Keep the source files at the repository’s top level. Do not upload `node_modules/`, `dist/`, `output/`, or `public/pdfjs/`; the workflow installs dependencies and creates the build and local PDF fonts.
+3. Open the repository’s **Settings → Pages**.
+4. Under **Build and deployment → Source**, select **GitHub Actions**. If the previous version used **Deploy from a branch**, switch it to GitHub Actions.
+5. Commit or push the changes to **main**. You can also open **Actions → Build and deploy resume → Run workflow** and choose main.
+6. Wait for both the build and deploy jobs to finish. The workflow installs dependencies, runs tests, checks TypeScript, builds `dist/`, and publishes that folder.
+7. Open the address shown under **Settings → Pages** or the deployment environment. For this repository, the expected address is `https://alisonsmy.github.io/resume/`.
+8. Check the page, photo, and **Preview PDF → Download A4 PDF** flow on the published site.
 
-For a repository named `resume`, the usual address is `https://YOUR-USERNAME.github.io/resume/`. The site also works at a root address such as `https://YOUR-USERNAME.github.io/`. All asset paths are relative.
+The Vite configuration uses relative asset paths, so the build works at both a root domain and a repository path such as `/resume/`. There is no client-side URL router to configure.
 
-Keep the empty `.nojekyll` file so GitHub serves the static files directly. If your upload tool hides it, create a new file named `.nojekyll` in the repository’s root.
+The workflow checks pull requests too, but only deploys main. If your publishing branch has another name, update both the branch triggers and deploy condition in `.github/workflows/deploy.yml`.
 
-GitHub’s official guide: [Configure a publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+For future content updates, replace `src/data/resume.json` and commit. For design changes, commit the changed TypeScript or CSS files. Each push to main rebuilds the website. Use a private browser window to check the published version without local overrides.
 
-### Publish later updates
-
-1. Make your edits and save them in the website editor.
-2. Select **Download website file** from either editor.
-3. On GitHub, replace the root `resume.js` with that downloaded file and commit the change. Keep the name exactly `resume.js`.
-4. Wait for the Pages deployment, then refresh the public site. Use a private window to check what a visitor sees without your local overrides.
-
-For design or feature changes, upload the changed HTML, CSS, JavaScript, or asset files as well. Downloading `resume.js` only saves resume content and the photo.
+This follows [Vite’s GitHub Pages deployment guide](https://vite.dev/guide/static-deploy.html#github-pages).
 
 ## Troubleshooting
 
 | Problem | What to do |
 | --- | --- |
-| `python3` or `py` is not found | Install Python 3, reopen Terminal/PowerShell, and repeat the version check. |
-| “Address already in use” | A server may already be running: try opening the local URL. Otherwise use port `4174` in the start command and open `http://127.0.0.1:4174/`. Saved browser edits on 4173 do not move to 4174. |
-| Browser cannot connect | Keep the server window open. Check that the command started successfully and the URL uses the same port. |
-| A file list appears instead of the resume | Stop the server with Ctrl+C, change into the folder that contains `index.html`, and start it again. |
-| The page is blank or missing content | Use the local URL, not a `file://` address. Enable JavaScript and check that all project files are present. If you edited `resume.js` by hand, check its quotes, commas, and brackets. |
-| PDF preview fails | Select **Try preview again**. Check that `assets/vendor/pdfjs/`, including its worker and `standard_fonts/`, was uploaded. Try a current browser. If available, download the PDF and open it on your device. |
-| PDF generation fails | Check that the photo loads and `assets/vendor/jspdf.umd.min.js` exists, then retry. |
-| A replacement photo is rejected | Choose a supported JPG, PNG, or WebP within the size limits. Export HEIC photos as JPG first. |
-| Old jobs or photo appear after updating files | Local browser edits may override them. Use **Use published version → Save changes** and/or **Use published photo → Save photo**. |
-| Public website did not change after saving | Download the website file and replace `resume.js` on GitHub; browser saves are local. Then check the Pages deployment. |
-| GitHub Pages shows 404 or missing assets | Check the branch and root folder in Pages settings. Confirm `index.html` and the complete `assets` folder are at the expected paths. |
+| `node` or `npm` is not found | Install Node.js 24 or newer and reopen the terminal. |
+| `npm ci` fails | Check your Node version and internet connection. Run it from the folder containing `package.json`. Keep `package-lock.json` with the project. |
+| PowerShell blocks `npm.ps1` | Use `npm.cmd` in place of `npm` (for example, `npm.cmd run dev`). |
+| Port 4173 is in use | Stop the old server with Ctrl+C, or run `npm run dev -- --port 4174` and use the new address. Local saves on 4173 do not move to 4174. |
+| Browser cannot connect | Keep the server terminal open and check the printed URL and port. |
+| Blank page or raw source | Use `npm run dev`, or build then run `npm run preview`. Do not open `index.html` directly. |
+| File changes do not appear in production preview | Run `npm run build` again. `npm run dev` updates source changes automatically. |
+| Old jobs or photo override file changes | Restore the published version from the matching editor and save. |
+| Photo is rejected | Check format and size. Export HEIC pictures as JPG first. |
+| PDF preview fails | Try preview again in a current browser. Reinstall with `npm ci` and rebuild if files are missing. Keep the whole `dist/` together when hosting manually. |
+| Public website does not change after browser save | Download `resume.json`, replace `src/data/resume.json` on GitHub, and commit. |
+| GitHub Pages is blank or shows 404 | Set Pages Source to GitHub Actions and inspect the workflow under Actions. Serve the built `dist/`, not the TypeScript source folder. |
+| Build fails after editing resume content | Check JSON syntax and required fields, then run `npm run typecheck`. |
 
-## Project files and libraries
+## Project structure
 
-| File or folder | Purpose |
-| --- | --- |
-| `index.html` | Page, editors, preview dialog, and metadata |
-| `styles.css` | Blue design, mobile layouts, and browser print styles |
-| `resume.js` | Resume content and optional photo shared by the page and PDF |
-| `app.js` | Renders the resume and connects PDF creation to the preview |
-| `editor.js` | Experience editing, local saves, undo, and website file download |
-| `photo-editor.js` | Photo selection, cropping, local saves, and publishing |
-| `pdf.js` | A4 PDF layout, text, photo, links, and page breaks |
-| `pdf-preview.js` | Exact PDF preview, paging, zoom, text view, and download |
-| `assets/alison-shu.jpg` | Original resume photo |
-| `assets/vendor/jspdf.umd.min.js` | jsPDF 4.2.1, used to create the PDF; MIT license included |
-| `assets/vendor/pdfjs/` | PDF.js 6.3.289, used to display the PDF; Apache-2.0 and font licenses included |
-| `.nojekyll` | Tells GitHub Pages to serve the static files directly |
-| `docs/design/` | Design references and brief; optional for hosting |
+```text
+src/
+  App.tsx                     Resume page and shared saved state
+  main.tsx                    React entry point
+  types.ts                    Resume, job, and education types
+  styles.css                  Blue design and responsive layouts
+  data/resume.json            Editable resume content and optional photo
+  components/
+    Modal.tsx                 Shared accessible dialog
+    ExperienceEditor.tsx      Jobs, descriptions, reorder, undo, and save
+    PhotoEditor.tsx           Picture selection and square crop
+    PdfPreview.tsx            A4 preview, page controls, zoom, and download
+  lib/
+    storage.ts                Browser saves and JSON download
+    pdf.ts                    Typed A4 PDF layout
+    resume.test.ts            Migration and PDF tests
+public/assets/                Original photo and favicon
+.github/workflows/deploy.yml  Build, test, and GitHub Pages deployment
+vite.config.ts               React build, relative paths, and local PDF fonts
+```
 
-There are no analytics, external fonts, or runtime CDN requests. PDF libraries load from this website only when the preview is opened. These files are already included: **no `npm install` or build command is needed**.
-
-Library references: [jsPDF](https://github.com/parallax/jsPDF), [PDF.js examples and documentation](https://mozilla.github.io/pdf.js/examples/).
+Dependencies are managed by npm. React renders the interface; TypeScript checks the source; Vite builds it. jsPDF creates the PDF, and PDF.js displays it. PDF libraries load when the preview is opened. Their licenses are included in the production build under `licenses/`; font licenses are included alongside the fonts.
