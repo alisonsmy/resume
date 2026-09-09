@@ -25,9 +25,16 @@ export function Modal({
     const dialog = ref.current;
     if (open && !dialog?.open) dialog?.showModal();
     if (!open && dialog?.open) dialog.close();
-    document.body.classList.toggle("editor-open", open);
+    document.body.classList.toggle(
+      "editor-open",
+      !!document.querySelector("dialog[open]"),
+    );
     return () => {
-      document.body.classList.remove("editor-open");
+      dialog?.close();
+      document.body.classList.toggle(
+        "editor-open",
+        !!document.querySelector("dialog[open]"),
+      );
     };
   }, [open]);
   return (

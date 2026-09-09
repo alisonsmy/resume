@@ -1,4 +1,8 @@
-import type { Job, Resume } from "../types";
+import type { Job, Resume, ResumeContent } from "../types";
+
+import { contentFrom, differentContent, normalizeContent } from "./content";
+
+export const CONTENT_KEY = "alison-resume-content-v1";
 
 // Keep the existing keys so saved edits survive the React migration at the same URL.
 export const EXPERIENCE_KEY = "alison-resume-experience-v1";
@@ -47,6 +51,12 @@ export const differentJobs = (a: Job[], b: Job[]) =>
 
 export function readSavedResume(published: Resume): Resume {
   const resume = structuredClone(published);
+  try {
+    const raw = localStorage.getItem(CONTENT_KEY);
+    if (raw !== null) Object.assign(resume, normalizeContent(JSON.parse(raw)));
+  } catch {
+    /* Keep published text; jobs and photo are restored independently. */
+  }
   try {
     const raw = localStorage.getItem(EXPERIENCE_KEY);
     if (raw !== null) resume.experience = normalizeExperience(JSON.parse(raw));
@@ -98,4 +108,19 @@ export function downloadWebsiteFile(resume: Resume): void {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+export function persistContent(
+  content: ResumeContent,
+  original: Resume,
+): boolean {
+  try {
+    const normalized = normalizeContent(content);
+    if (differentContent(normalized, contentFrom(original)))
+      localStorage.setItem(CONTENT_KEY, JSON.stringify(normalized));
+    else localStorage.removeItem(CONTENT_KEY);
+    return true;
+  } catch {
+    return false;
+  }
 }

@@ -1,3 +1,5 @@
+import type { ResumeLabels } from "./lib/content";
+
 export interface Job {
   company: string;
   role: string;
@@ -41,4 +43,7 @@ export interface Resume {
   interests: string;
   languages: string[];
   photo?: string;
+  copy?: Partial<ResumeLabels>;
 }
+
+export type ResumeContent = Omit<Resume, "experience" | "photo">;

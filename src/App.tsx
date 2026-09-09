@@ -1,16 +1,25 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
-import type { Job, Resume } from "./types";
+import type { Job, Resume, ResumeContent } from "./types";
 import content from "./data/resume.json";
 import {
   defaultPhoto,
   differentJobs,
   persistJobs,
+  persistContent,
   persistPhoto,
   readSavedResume,
 } from "./lib/storage";
 import { ExperienceEditor } from "./components/ExperienceEditor";
 import { PhotoEditor } from "./components/PhotoEditor";
 import { Modal } from "./components/Modal";
+
+import { ContentEditor } from "./components/ContentEditor";
+import {
+  labelsFor,
+  type ResumeLabels,
+  differentContent,
+  contentFrom,
+} from "./lib/content";
 
 const PdfPreview = lazy(() => import("./components/PdfPreview"));
 const published: Resume = content;
@@ -40,7 +49,7 @@ function Points({ items }: { items: string[] }) {
     </ul>
   );
 }
-function Experience({ jobs }: { jobs: Job[] }) {
+function Experience({ jobs, copy }: { jobs: Job[]; copy: ResumeLabels }) {
   return (
     <div id="experience-list">
       {jobs.map((job, index) => (
@@ -60,12 +69,14 @@ function Experience({ jobs }: { jobs: Job[] }) {
             )}
             {(!!job.details?.length || !!job.technologies) && (
               <details>
-                <summary aria-label={`More about this role at ${job.company}`}>
-                  More about this role
+                <summary aria-label={`${copy.moreAboutRole} — ${job.company}`}>
+                  {copy.moreAboutRole}
                 </summary>
                 <Points items={job.details || []} />
                 {job.technologies && (
-                  <p className="technical-note">Tools: {job.technologies}</p>
+                  <p className="technical-note">
+                    {copy.tools}: {job.technologies}
+                  </p>
                 )}
               </details>
             )}
@@ -77,10 +88,21 @@ function Experience({ jobs }: { jobs: Job[] }) {
 }
 export default function App() {
   const [resume, setResume] = useState(() => readSavedResume(published));
-  const [editor, setEditor] = useState<"experience" | "photo" | "pdf" | null>(
-    null,
-  );
+  const [editor, setEditor] = useState<
+    "experience" | "photo" | "pdf" | "content" | null
+  >(null);
   const [experienceMounted, setExperienceMounted] = useState(false);
+  const [contentMounted, setContentMounted] = useState(false);
+  const copy = labelsFor(resume);
+  function saveContent(content: ResumeContent) {
+    const persisted = persistContent(content, published);
+    setResume((previous) => ({ ...previous, ...content }));
+    return persisted;
+  }
+  const openExperience = () => {
+    setExperienceMounted(true);
+    setEditor("experience");
+  };
   useEffect(() => {
     document.title = `${resume.shortName} — ${resume.role}`;
   }, [resume.shortName, resume.role]);
@@ -105,20 +127,34 @@ export default function App() {
         <a
           className="wordmark"
           href="#top"
-          aria-label="Alison Shu, back to top"
+          aria-label={`${resume.shortName}, ${copy.backToTop}`}
         >
-          alison shu.
+          {resume.shortName.toLowerCase()}.
         </a>
         <nav aria-label="Main navigation">
-          <a href="#experience">Experience</a>
-          <a href="#skills">Skills</a>
-          <a href="#about">About</a>
+          <a href="#experience">{copy.navExperience}</a>
+          <a href="#skills">{copy.navSkills}</a>
+          <a href="#about">{copy.navAbout}</a>
         </nav>
         <button className="button download" onClick={() => setEditor("pdf")}>
           <Arrow direction="download" />
           <span>Preview PDF</span>
         </button>
       </header>
+      <div className="resume-edit-tools wrap">
+        {differentContent(contentFrom(resume), contentFrom(published)) && (
+          <span>Showing text saved in this browser.</span>
+        )}
+        <button
+          className="editor-button"
+          onClick={() => {
+            setContentMounted(true);
+            setEditor("content");
+          }}
+        >
+          Edit resume
+        </button>
+      </div>
       <main id="main">
         <section className="hero wrap" aria-labelledby="hero-title">
           <div className="hero-main">
@@ -133,14 +169,14 @@ export default function App() {
             </div>
             <div className="hero-actions">
               <a className="button" href="#experience">
-                Explore my experience <Arrow direction="down" />
+                {copy.explore} <Arrow direction="down" />
               </a>
               <a className="text-link" href="#contact">
-                Get in touch <Arrow />
+                {copy.getInTouch} <Arrow />
               </a>
             </div>
           </div>
-          <aside className="signature" aria-label="About Alison">
+          <aside className="signature" aria-label={`About ${resume.shortName}`}>
             <img
               id="portrait"
               className="portrait"
@@ -151,7 +187,10 @@ export default function App() {
               fetchPriority="high"
             />
             <div className="signature-name" aria-hidden="true">
-              <em>Alison</em> Shu
+              <em>{resume.shortName.split(" ")[0]}</em>
+              {resume.shortName.includes(" ")
+                ? ` ${resume.shortName.split(" ").slice(1).join(" ")}`
+                : ""}
             </div>
             <p>{resume.name}</p>
             <p>
@@ -172,7 +211,7 @@ export default function App() {
           </aside>
           <ol className="focus-list">
             {resume.focus.map((focus, index) => (
-              <li key={focus}>
+              <li key={index}>
                 <small>{String(index + 1).padStart(2, "0")}</small>
                 <span>{focus}</span>
               </li>
@@ -187,17 +226,14 @@ export default function App() {
           <div className="section-heading">
             <div>
               <h2 id="experience-title">
-                Where I’ve <em>worked.</em>
+                {copy.experienceTitle} <em>{copy.experienceEmphasis}</em>
               </h2>
-              <p>Building software for fast-moving financial markets.</p>
+              <p>{copy.experienceSubtitle}</p>
             </div>
             <button
               className="editor-button"
               id="edit-experience"
-              onClick={() => {
-                setExperienceMounted(true);
-                setEditor("experience");
-              }}
+              onClick={openExperience}
             >
               Edit experience
             </button>
@@ -208,14 +244,14 @@ export default function App() {
               editor to publish them.
             </p>
           )}
-          <Experience jobs={resume.experience} />
+          <Experience jobs={resume.experience} copy={copy} />
         </section>
         <section className="foundations wrap" aria-label="Skills and education">
           <div id="skills">
-            <h2>Tools of the trade.</h2>
+            <h2>{copy.skillsTitle}</h2>
             <dl className="skill-list">
-              {resume.skills.map((skill) => (
-                <Fragment key={skill.label}>
+              {resume.skills.map((skill, index) => (
+                <Fragment key={index}>
                   <dt>{skill.label}</dt>
                   <dd>{skill.items.join(", ")}</dd>
                 </Fragment>
@@ -223,33 +259,42 @@ export default function App() {
             </dl>
           </div>
           <div className="learning">
-            <h2>Always learning.</h2>
+            <h2>{copy.educationTitle}</h2>
             <div>
               {resume.education.map((degree, index) => (
-                <Fragment key={degree.degree}>
+                <Fragment key={index}>
                   {(!index ||
                     degree.school !== resume.education[index - 1].school) && (
                     <h3>{degree.school}</h3>
                   )}
                   <p>
                     {degree.shortDegree} · {degree.years}
-                    {degree.note.startsWith("GPA") ? ` · ${degree.note}` : ""}
+                    {degree.note ? ` · ${degree.note}` : ""}
                   </p>
                 </Fragment>
               ))}
             </div>
-            <h3>Where it started</h3>
+            <h3>{copy.internshipsTitle}</h3>
             <div>
-              {resume.internships.map((job) => (
-                <div className="internship" key={job.company}>
+              {resume.internships.map((job, index) => (
+                <div className="internship" key={index}>
                   <p>
                     {job.company} · {job.shortRole} · {job.years}
                   </p>
                   <details>
-                    <summary aria-label={`Read more about ${job.company}`}>
-                      Read more
+                    <summary aria-label={`${copy.readMore} — ${job.company}`}>
+                      {copy.readMore}
                     </summary>
                     <Points items={job.bullets} />
+                    <Points items={job.details || []} />
+                    {job.division && <p>{job.division}</p>}
+                    {job.location && <p>{job.location}</p>}
+                    {!!job.stack?.length && <p>{job.stack.join(" · ")}</p>}
+                    {job.technologies && (
+                      <p>
+                        {copy.tools}: {job.technologies}
+                      </p>
+                    )}
                   </details>
                 </div>
               ))}
@@ -261,21 +306,23 @@ export default function App() {
           className="personal wrap"
           aria-labelledby="about-title"
         >
-          <h2 id="about-title">Away from the keyboard.</h2>
+          <h2 id="about-title">{copy.interestsTitle}</h2>
           <div>
             <p className="interests">{resume.interests}</p>
-            <p>
-              I speak {spoken}
-              {resume.languages.length > 2 ? "," : ""}
-              {spoken ? " and " : ""}
-              {resume.languages.at(-1)}.
-            </p>
+            {resume.languages.length > 0 && (
+              <p>
+                {copy.languagesIntro} {spoken}
+                {resume.languages.length > 2 ? "," : ""}
+                {spoken ? " and " : ""}
+                {resume.languages.at(-1)}.
+              </p>
+            )}
           </div>
         </section>
       </main>
       <footer id="contact" className="contact">
         <div className="wrap">
-          <h2>Let’s build something good.</h2>
+          <h2>{copy.contactTitle}</h2>
           <div className="contact-links">
             <a href={`mailto:${resume.email}`}>
               {resume.email}
@@ -285,9 +332,9 @@ export default function App() {
               href={resume.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="LinkedIn (opens in a new tab)"
+              aria-label={`${copy.linkedin} (opens in a new tab)`}
             >
-              LinkedIn
+              {copy.linkedin}
               <Arrow />
             </a>
             <a href={`tel:${resume.phone.replace(/\s/g, "")}`}>
@@ -299,11 +346,21 @@ export default function App() {
               {resume.shortName} · {resume.location}
             </p>
             <a href="#top">
-              Back to top <Arrow direction="up" />
+              {copy.backToTop} <Arrow direction="up" />
             </a>
           </div>
         </div>
       </footer>
+      {contentMounted && (
+        <ContentEditor
+          open={editor === "content"}
+          onClose={close}
+          onExperience={openExperience}
+          resume={resume}
+          published={published}
+          onSave={saveContent}
+        />
+      )}
       {experienceMounted && (
         <ExperienceEditor
           open={editor === "experience"}

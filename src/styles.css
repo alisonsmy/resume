@@ -380,3 +380,27 @@ details[open] > summary::after { content: '−'; }
   .contact-links svg { display: none; }
   a { text-decoration: none; }
 }
+
+/* Text editing uses the same blue forms as the company editor. */
+.resume-edit-tools { display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding-top: 18px; }
+.resume-edit-tools > span { font-size: 13px; color: var(--muted); }
+.content-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.content-section-heading h3 { font-size: 22px; }
+.content-card { border: 1px solid var(--line); border-radius: 6px; padding: 20px; margin: 0 0 24px; min-width: 0; }
+.content-card legend { padding: 0 8px; font-size: 17px; }
+.content-editor .company-shortcut { margin-top: 20px; }
+.content-editor .editor-reset { display: block; }
+.content-editor .job-form small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.hero-main, .signature, .focus-list li, .foundations > div, .contact-links a { min-width: 0; }
+h1, .focus-list span, .foundations h2 { white-space: normal; }
+h1, h2, h3, .wordmark, .signature-name, .contact-links a, .focus-list span { overflow-wrap: anywhere; }
+.introduction p, .interests, .job-content li { white-space: pre-line; }
+@media (max-width: 640px) {
+  .content-editor .editor-job-list { flex-direction: row; flex-wrap: wrap; max-height: 140px; gap: 4px; }
+  .content-editor .editor-job { padding: 8px 10px; font-size: 13px; }
+  .content-editor .company-shortcut { margin-top: 10px; }
+  .content-editor .editor-reset { display: inline-block; margin: 0 0 0 14px; }
+  .content-card { padding: 14px; }
+  .resume-edit-tools { padding-top: 12px; }
+}
+@media print { .resume-edit-tools { display: none !important; } }

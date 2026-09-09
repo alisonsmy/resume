@@ -175,7 +175,8 @@ export default function PdfPreview({
     if (!download) return;
     setSaving(true);
     try {
-      await download.save("Alison_Shu_Resume.pdf", { returnPromise: true });
+      const filename = `${resume.shortName.trim().replace(/[^\p{L}\p{N}._-]+/gu, "_") || "My"}_Resume.pdf`;
+      await download.save(filename, { returnPromise: true });
       setStatus(
         "Choose a folder and Save if asked. Otherwise, check your downloads or your browser’s PDF viewer.",
       );

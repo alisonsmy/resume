@@ -1,5 +1,6 @@
 import type { jsPDF } from "jspdf";
 import type { Job, Resume } from "../types";
+import { labelsFor } from "./content";
 
 // A text-based PDF: searchable, selectable, and readable by resume software.
 // Layout grows to additional pages when the source content grows.
@@ -14,6 +15,7 @@ export function createResumePdf(
     format: "a4",
     compress: true,
   });
+  const copy = labelsFor(resume);
   const left = 18;
   const right = 192;
   const width = right - left;
@@ -36,7 +38,12 @@ export function createResumePdf(
     doc.addPage("a4", "portrait");
     y = 18;
     setText(9, "bold", muted);
-    doc.text(clean(`${resume.shortName} / ${resume.role}`), left, y);
+    const header = doc.splitTextToSize(
+      clean(`${resume.shortName} / ${resume.role}`),
+      width,
+    );
+    doc.text(header.slice(0, 2), left, y);
+    y += (Math.min(header.length, 2) - 1) * 4;
     doc.setDrawColor(181, 197, 217);
     doc.line(left, y + 4, right, y + 4);
     y += 14;
@@ -51,12 +58,14 @@ export function createResumePdf(
       weight = "normal",
       color = blue,
       indent = 0,
+      maxWidth = width,
       after = 2,
       lineHeight = 4.8,
     } = {},
   ) {
+    if (!text.trim()) return;
     setText(size, weight, color);
-    const lines = doc.splitTextToSize(clean(text), width - indent);
+    const lines = doc.splitTextToSize(clean(text), maxWidth - indent);
     for (const line of lines) {
       ensureSpace(lineHeight);
       setText(size, weight, color);
@@ -66,10 +75,16 @@ export function createResumePdf(
     y += after;
   }
   function heading(label: string) {
+    if (!label.trim()) return;
     ensureSpace(24);
     y += 4;
-    setText(10, "bold");
-    doc.text(label.toUpperCase(), left, y);
+    text(label.toUpperCase(), {
+      size: 10,
+      weight: "bold",
+      after: 0,
+      lineHeight: 4.5,
+    });
+    y -= 4.5;
     doc.setDrawColor(181, 197, 217);
     doc.line(left, y + 3, right, y + 3);
     y += 10;
@@ -104,7 +119,7 @@ export function createResumePdf(
     job.bullets.forEach(bullet);
     if (includeDetails) (job.details || []).forEach(bullet);
     if (job.technologies)
-      text(`Tools: ${job.technologies}`, {
+      text(`${copy.tools}: ${job.technologies}`, {
         size: 8.5,
         color: muted,
         lineHeight: 4,
@@ -117,33 +132,59 @@ export function createResumePdf(
     title: `${resume.shortName} - Resume`,
     author: resume.name,
     subject: resume.role,
-    keywords: "resume, software engineer, trading systems, backend, Web3",
-    creator: "Alison Shu Resume Website",
+    keywords: `resume, ${resume.role}`,
+    creator: "Resume Website",
   });
   doc.setLanguage("en");
   if (portrait) doc.addImage(portrait, "JPEG", 170, 17, 22, 22);
   setText(25, "bold");
-  doc.text(clean(resume.name), left, y);
-  y += 9;
-  text(`${resume.role} | ${resume.location}`, {
+  const nameLines = doc.splitTextToSize(
+    clean(resume.name),
+    portrait ? 145 : width,
+  );
+  doc.text(nameLines, left, y);
+  y += nameLines.length * 10;
+  text([resume.role, resume.location].filter(Boolean).join(" | "), {
     size: 12,
     lineHeight: 5.5,
     after: 2,
+    maxWidth: portrait && y < 43 ? 145 : width,
   });
+  if (portrait) y = Math.max(y, 43);
   setText(9, "normal", muted);
-  doc.textWithLink(resume.email, left, y, { url: `mailto:${resume.email}` });
-  doc.textWithLink(resume.phone, left + 60, y, {
-    url: `tel:${resume.phone.replace(/\s/g, "")}`,
-  });
-  doc.textWithLink("LinkedIn / alisonsmy", left + 112, y, {
-    url: resume.linkedin,
-  });
-  y += 10;
+  const contacts = [
+    { label: resume.email, url: `mailto:${resume.email}`, x: left, width: 57 },
+    {
+      label: resume.phone,
+      url: `tel:${resume.phone.replace(/\s/g, "")}`,
+      x: left + 62,
+      width: 45,
+    },
+    {
+      label: resume.linkedin ? copy.linkedin : "",
+      url: resume.linkedin,
+      x: left + 112,
+      width: 62,
+    },
+  ];
+  let contactHeight = 0;
+  for (const contact of contacts) {
+    const lines: string[] = doc.splitTextToSize(
+      clean(contact.label),
+      contact.width,
+    );
+    lines.forEach((line, index) =>
+      doc.textWithLink(line, contact.x, y + index * 4.2, { url: contact.url }),
+    );
+    contactHeight = Math.max(contactHeight, lines.length * 4.2);
+  }
+  y += contactHeight + 5;
+  text(resume.intro, { size: 10.5, lineHeight: 5.2, after: 2 });
   text(resume.summary, { size: 10.5, lineHeight: 5.2, after: 2 });
-  heading("Experience");
+  heading(copy.pdfExperience);
   // Let added jobs and longer descriptions flow onto as many pages as needed.
   resume.experience.forEach((job) => role(job));
-  heading("Skills");
+  heading(copy.pdfSkills);
   resume.skills.forEach(({ label, items }) =>
     text(`${label}: ${items.join(", ")}`, {
       size: 9.5,
@@ -151,7 +192,7 @@ export function createResumePdf(
       after: 1.2,
     }),
   );
-  heading("Education");
+  heading(copy.pdfEducation);
   resume.education.forEach((degree) => {
     ensureSpace(21);
     text(degree.degree, {
@@ -168,7 +209,7 @@ export function createResumePdf(
     });
     text(degree.note, { size: 9, lineHeight: 4.2, after: 2 });
   });
-  heading("Internships");
+  heading(copy.pdfInternships);
   resume.internships.forEach((job) => {
     ensureSpace(24);
     text(`${job.company} | ${job.role}`, {
@@ -184,14 +225,25 @@ export function createResumePdf(
       after: 1.5,
     });
     job.bullets.forEach(bullet);
+    (job.details || []).forEach(bullet);
+    if (job.division) text(job.division, { size: 9 });
+    if (job.technologies || job.stack?.length)
+      text(`${copy.tools}: ${job.technologies || job.stack?.join(", ")}`, {
+        size: 9,
+      });
     y += 1;
   });
-  heading("Outside work");
-  text(`Languages: ${resume.languages.join(", ")}.`, {
-    size: 9.5,
-    after: 1,
-    lineHeight: 4.5,
-  });
+  heading(copy.pdfInterests);
+  text(
+    resume.languages.length
+      ? `${copy.pdfLanguages}: ${resume.languages.join(", ")}.`
+      : "",
+    {
+      size: 9.5,
+      after: 1,
+      lineHeight: 4.5,
+    },
+  );
   text(resume.interests, { size: 9.5, after: 0, lineHeight: 4.5 });
 
   const count = doc.getNumberOfPages();
