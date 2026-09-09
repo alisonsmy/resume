@@ -1,0 +1,97 @@
+// Edit your resume here. The website and PDF both read this file.
+export const resume = {
+  name: 'Ming Yan (Alison) Shu',
+  shortName: 'Alison Shu',
+  role: 'Software Engineer',
+  location: 'Hong Kong',
+  email: 'alison_ms@outlook.com',
+  phone: '+852 6360 4737',
+  linkedin: 'https://www.linkedin.com/in/alisonsmy',
+  headline: ['Thoughtful code.', 'Reliable systems.'],
+  intro: 'I’m Alison, a software engineer in Hong Kong.',
+  summary: 'I build trading systems, backend services, and Web3 applications that work well under pressure.',
+  focus: ['Trading systems', 'Backend engineering', 'Web3 applications'],
+  experience: [
+    {
+      company: 'Infinity Exchange / ETHGas',
+      role: 'Software Developer',
+      dates: 'May 2023 — Present', // Preserved from the supplied 2025 resume.
+      location: 'Hong Kong',
+      bullets: [
+        'Built a fast, reliable Web3 trading system in Java.',
+        'Created market-making tools with Go and Python.',
+        'Extended rbuilder in Rust and connected it to ETHGas.',
+        'Built backend services for rebates, airdrops, and staking.',
+      ],
+      details: [
+        'Built client packages to make the trading system easier to access.',
+        'Worked with the smart contract team on backend services and trading data analysis.',
+        'Integrated market-making tools with other teams to improve trade execution and support more assets.',
+        'Added custom rbuilder features with WebSocket and API connections.',
+      ],
+      stack: ['Java', 'Go', 'Python', 'Rust', 'AWS'],
+      technologies: 'Java Reactor, Rust, Go, Python, TypeScript, Next.js, Node.js, MySQL, MongoDB, Kafka, ZeroMQ, WebSocket, REST APIs, Docker, Kubernetes, AWS, Web3j',
+    },
+    {
+      company: 'Excel Asia Limited',
+      division: 'Monmonkey Group Securities',
+      role: 'Java Developer',
+      dates: 'Dec 2022 — Mar 2023',
+      location: 'Hong Kong',
+      bullets: [
+        'Built stock brokerage services with Java and Spring Boot.',
+        'Connected NASDAQ market data and improved database design.',
+      ],
+      details: [
+        'Used RPC, microservices, and multithreading to support low-latency mobile brokerage services.',
+        'Designed schemas for MariaDB and MongoDB and connected real-time market depth data.',
+      ],
+    },
+    {
+      company: 'Ironfly Technologies',
+      role: 'Software Engineer',
+      dates: 'Aug 2020 — Dec 2022',
+      location: 'Hong Kong',
+      bullets: [
+        'Maintained a buy-side trading system and real-time market data connections.',
+        'Built AWS backend services and a secure portfolio management layer.',
+      ],
+      details: [
+        'Used JavaScript, Node.js, React, NoSQL, and Redis to improve trading performance.',
+        'Improved FIX and market data connections using Java.',
+        'Built with AWS API Gateway, Kinesis, DynamoDB, Lambda, and CloudWatch.',
+        'Added a security layer for a SaaS portfolio management system.',
+      ],
+    },
+    {
+      company: 'Horizon Software Asia Limited',
+      role: 'Software Engineer',
+      dates: 'Apr 2019 — Apr 2020',
+      location: 'Hong Kong',
+      bullets: [
+        'Built distributed trading software in Java and algorithms in Scala.',
+        'Connected exchanges through FIX and real-time market data.',
+      ],
+      details: [
+        'Used Java 8 to build distributed, multithreaded trading software.',
+        'Designed structured QA test plans.',
+      ],
+    },
+  ],
+  skills: [
+    { label: 'Languages', items: ['Java', 'Go', 'Rust', 'Python', 'TypeScript', 'JavaScript'] },
+    { label: 'Web', items: ['React', 'Next.js', 'Node.js'] },
+    { label: 'Data', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Kafka'] },
+    { label: 'Infrastructure', items: ['AWS', 'Docker', 'Kubernetes', 'Git'] },
+  ],
+  education: [
+    { school: 'University of the Pacific', location: 'California', degree: 'Master of Science in Engineering Science', shortDegree: 'MSc, Engineering Science', dates: 'Aug 2017 — May 2018', years: '2017–2018', note: 'GPA 3.73' },
+    { school: 'University of the Pacific', location: 'California', degree: 'Bachelor of Science, Computer Science', shortDegree: 'BSc, Computer Science', dates: 'Aug 2013 — May 2017', years: '2013–2017', note: 'Focused on software development' },
+  ],
+  internships: [
+    { company: 'Open Networking Foundation', role: 'Co-op Intern (QA Tester)', shortRole: 'QA Intern', dates: 'May 2016 — Jan 2017', years: '2016–2017', location: 'Menlo Park, California', bullets: ['Fixed test issues and worked with developers to debug ONOS.', 'Added tests for new ONOS features and wrote open-source documentation.'] },
+    { company: 'PCCW / Hong Kong Telecom', role: 'Summer Intern', shortRole: 'Summer Intern', dates: 'Jun 2015 — Aug 2015', years: '2015', location: 'Hong Kong', bullets: ['Built parts of a call-flow system using C# and ASP.NET.', 'Designed web pages with CSS and JavaScript and used SQL in the application.'] },
+  ],
+  interests: 'Travel, the gym, and a good game.',
+  languages: ['English', 'Cantonese', 'Mandarin'],
+};
