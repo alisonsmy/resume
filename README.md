@@ -4,6 +4,9 @@ A blue, mobile-friendly resume website built with **React, TypeScript, and Vite*
 
 The website runs entirely in the browser. It needs no database, API key, or backend. GitHub Actions builds it and publishes the finished website to GitHub Pages.
 
+[![Build and deploy resume](https://github.com/alisonsmy/resume/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/alisonsmy/resume/actions/workflows/deploy.yml)
+**Live site:** [alisonsmy.github.io/resume](https://alisonsmy.github.io/resume/)
+
 ## Run it on your computer — step by step
 
 ### 1. Install Node.js

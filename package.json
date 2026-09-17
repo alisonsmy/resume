@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/alisonsmy/resume/issues"
   },
-  "homepage": "https://github.com/alisonsmy/resume#readme",
+  "homepage": "https://alisonsmy.github.io/resume/",
   "dependencies": {
     "jspdf": "^4.2.1",
     "pdfjs-dist": "^6.3.289",
